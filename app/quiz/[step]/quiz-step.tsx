@@ -71,7 +71,7 @@ function canProceedFromStep(step: number, a: QuizAnswers) {
   }
 }
 
-function Step1() {
+export function Step1() {
   const { answers, setAnswer } = useQuizStore();
   return (
     <VisualGrid
@@ -84,7 +84,7 @@ function Step1() {
   );
 }
 
-function Step2() {
+export function Step2() {
   const { answers, setAnswer } = useQuizStore();
   return (
     <VisualGrid
@@ -97,7 +97,7 @@ function Step2() {
   );
 }
 
-function Step3() {
+export function Step3() {
   const { answers, setAnswer } = useQuizStore();
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -140,7 +140,7 @@ function Step3() {
   );
 }
 
-function Step4() {
+export function Step4() {
   const { answers, setAnswer } = useQuizStore();
   const [tab, setTab] = useState<"preset" | "custom">("preset");
 
@@ -218,7 +218,7 @@ function MiniPalettePreview({ palette }: { palette: NonNullable<QuizAnswers["pal
   );
 }
 
-function Step5() {
+export function Step5() {
   const { answers, setAnswer } = useQuizStore();
   const vibes: { id: TypographyVibeId; labelTh: string; descriptionTh: string }[] = [
     { id: "serif-elegant", labelTh: "เซริฟหรู", descriptionTh: "พรีเมียม สไตล์บรรณาธิการ" },
@@ -267,7 +267,7 @@ function Step5() {
   );
 }
 
-function Step6() {
+export function Step6() {
   const { answers, setAnswer } = useQuizStore();
   const [tab, setTab] = useState<"curated" | "browse">("curated");
 
@@ -331,7 +331,7 @@ function Step6() {
   );
 }
 
-function Step7() {
+export function Step7() {
   const { answers, setAnswer } = useQuizStore();
   return (
     <VisualGrid
@@ -344,7 +344,7 @@ function Step7() {
   );
 }
 
-function Step8() {
+export function Step8() {
   const { answers, setAnswer } = useQuizStore();
   const mood = answers.mood ?? {};
 

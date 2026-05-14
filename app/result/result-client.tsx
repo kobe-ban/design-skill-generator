@@ -2,17 +2,82 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Copy, Download, RotateCcw, Check, FileText, Eye } from "lucide-react";
+import { Copy, Download, RotateCcw, Check, FileText, Eye, Pencil } from "lucide-react";
 import { useQuizStore } from "@/lib/store";
 import { generateSkillMarkdown } from "@/lib/skill-generator";
 import { WebsitePreview } from "@/components/website-preview";
+import { Modal } from "@/components/modal";
+import {
+  Step1,
+  Step2,
+  Step3,
+  Step4,
+  Step5,
+  Step6,
+  Step7,
+  Step8,
+} from "@/app/quiz/[step]/quiz-step";
 import { cn } from "@/lib/utils";
+
+type EditField =
+  | "visualStyle"
+  | "motion"
+  | "colorMood"
+  | "palette"
+  | "typoVibe"
+  | "fonts"
+  | "layout"
+  | "mood";
+
+const editConfig: Record<EditField, { title: string; description: string; size: "lg" | "xl" }> = {
+  visualStyle: {
+    title: "แก้ไข Visual Style",
+    description: "เลือกสไตล์ภาพรวมของดีไซน์",
+    size: "xl",
+  },
+  motion: {
+    title: "แก้ไข Motion",
+    description: "ระดับการเคลื่อนไหวและ animation",
+    size: "xl",
+  },
+  colorMood: {
+    title: "แก้ไข Color Mood",
+    description: "บรรยากาศโดยรวมของชุดสี",
+    size: "xl",
+  },
+  palette: {
+    title: "แก้ไข Color Palette",
+    description: "ชุดสีหลักที่จะใช้ในโปรเจกต์",
+    size: "xl",
+  },
+  typoVibe: {
+    title: "แก้ไข Typography Vibe",
+    description: "บรรยากาศของตัวอักษร",
+    size: "xl",
+  },
+  fonts: {
+    title: "แก้ไข Fonts",
+    description: "เลือกคู่ฟอนต์ที่ใช้",
+    size: "xl",
+  },
+  layout: {
+    title: "แก้ไข Layout",
+    description: "โครงสร้างและความหนาแน่นของเลย์เอาต์",
+    size: "xl",
+  },
+  mood: {
+    title: "แก้ไข Mood & Brand",
+    description: "รายละเอียด กลุ่มเป้าหมาย และบุคลิกของแบรนด์",
+    size: "lg",
+  },
+};
 
 export function ResultClient() {
   const { answers, reset } = useQuizStore();
   const [copied, setCopied] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [tab, setTab] = useState<"preview" | "skill">("preview");
+  const [editing, setEditing] = useState<EditField | null>(null);
 
   useEffect(() => {
     setHydrated(true);
@@ -123,15 +188,31 @@ export function ResultClient() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
-          <aside className="space-y-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
-            <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[300px_1fr]">
+          <aside className="space-y-1 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
+            <h2 className="mb-2 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               สรุปการเลือก
             </h2>
-            <SummaryItem label="Visual" value={answers.visualStyle} />
-            <SummaryItem label="Motion" value={answers.motion} />
-            <SummaryItem label="Color Mood" value={answers.colorMood} />
-            <SummaryItem label="Palette" value={answers.palette?.name} />
+            <SummaryItem
+              label="Visual"
+              value={answers.visualStyle}
+              onEdit={() => setEditing("visualStyle")}
+            />
+            <SummaryItem
+              label="Motion"
+              value={answers.motion}
+              onEdit={() => setEditing("motion")}
+            />
+            <SummaryItem
+              label="Color Mood"
+              value={answers.colorMood}
+              onEdit={() => setEditing("colorMood")}
+            />
+            <SummaryItem
+              label="Palette"
+              value={answers.palette?.name}
+              onEdit={() => setEditing("palette")}
+            />
             {answers.palette && (
               <div className="flex h-6 overflow-hidden rounded">
                 {[
@@ -145,7 +226,11 @@ export function ResultClient() {
                 ))}
               </div>
             )}
-            <SummaryItem label="Typo vibe" value={answers.typoVibe} />
+            <SummaryItem
+              label="Typo vibe"
+              value={answers.typoVibe}
+              onEdit={() => setEditing("typoVibe")}
+            />
             <SummaryItem
               label="Fonts"
               value={
@@ -153,11 +238,28 @@ export function ResultClient() {
                   ? `${answers.fonts.display.family} + ${answers.fonts.body.family}`
                   : undefined
               }
+              onEdit={() => setEditing("fonts")}
             />
-            <SummaryItem label="Layout" value={answers.layout} />
-            <SummaryItem label="Detail" value={answers.mood?.detailLevel} />
-            <SummaryItem label="Audience" value={answers.mood?.audience} />
-            <SummaryItem label="Brand" value={answers.mood?.brandVibe} />
+            <SummaryItem
+              label="Layout"
+              value={answers.layout}
+              onEdit={() => setEditing("layout")}
+            />
+            <SummaryItem
+              label="Detail"
+              value={answers.mood?.detailLevel}
+              onEdit={() => setEditing("mood")}
+            />
+            <SummaryItem
+              label="Audience"
+              value={answers.mood?.audience}
+              onEdit={() => setEditing("mood")}
+            />
+            <SummaryItem
+              label="Brand"
+              value={answers.mood?.brandVibe}
+              onEdit={() => setEditing("mood")}
+            />
           </aside>
 
           <section>
@@ -218,17 +320,57 @@ export function ResultClient() {
           </section>
         </div>
       </main>
+
+      {editing && (
+        <Modal
+          open
+          onClose={() => setEditing(null)}
+          title={editConfig[editing].title}
+          description={editConfig[editing].description}
+          size={editConfig[editing].size}
+        >
+          {editing === "visualStyle" && <Step1 />}
+          {editing === "motion" && <Step2 />}
+          {editing === "colorMood" && <Step3 />}
+          {editing === "palette" && <Step4 />}
+          {editing === "typoVibe" && <Step5 />}
+          {editing === "fonts" && <Step6 />}
+          {editing === "layout" && <Step7 />}
+          {editing === "mood" && <Step8 />}
+        </Modal>
+      )}
     </div>
   );
 }
 
-function SummaryItem({ label, value }: { label: string; value?: string }) {
+function SummaryItem({
+  label,
+  value,
+  onEdit,
+}: {
+  label: string;
+  value?: string;
+  onEdit?: () => void;
+}) {
   return (
-    <div className="flex items-baseline justify-between gap-2 border-b border-neutral-100 py-1 dark:border-neutral-800">
+    <div className="group flex items-baseline justify-between gap-2 border-b border-neutral-100 py-1.5 dark:border-neutral-800">
       <span className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</span>
-      <span className="truncate text-xs font-medium text-neutral-900 dark:text-neutral-100">
-        {value ?? "—"}
-      </span>
+      <div className="flex min-w-0 items-center gap-1.5">
+        <span className="truncate text-xs font-medium text-neutral-900 dark:text-neutral-100">
+          {value ?? "—"}
+        </span>
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="rounded p-1 text-neutral-400 opacity-0 transition hover:bg-neutral-100 hover:text-blue-600 group-hover:opacity-100 focus:opacity-100 dark:hover:bg-neutral-800"
+            aria-label={`แก้ไข ${label}`}
+            title={`แก้ไข ${label}`}
+          >
+            <Pencil className="h-3 w-3" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
